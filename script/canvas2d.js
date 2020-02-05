@@ -15,15 +15,16 @@ class Canvas2DUtility{
         this.context2d.lineWidth = width;
         this.context2d.beginPath();
         this.context2d.moveTo(x1, y1);
+        this.context2d.lineTo(x2, y2);
         this.context2d.closePath();
         this.context2d.stroke();
     }
     // 矩形描画
-    drawRect(x, y, width, heigth, color){
+    drawRect(x, y, width, height, color){
         if(color != null){
             this.context2d.fillStyle = color;
         }
-        this.constext2d.fillRect(x, y, width, height);
+        this.context2d.fillRect(x, y, width, height);
     }
     // 多角形描画
     drawPolygon(points, color){
@@ -49,7 +50,7 @@ class Canvas2DUtility{
         }
         this.context2d.beginPath();
         this.context2d.arc(x, y, radius, 0.0, Math.PI * 2.0);
-        this.closePath();
+        this.context2d.closePath();
         this.constext2d.fill();
     }
 
@@ -58,7 +59,7 @@ class Canvas2DUtility{
             this.constext2d.fillStyle = color;
         }
         this.context2d.beginPath();
-        this.context2d.moveTo();
+        this.context2d.moveTo(x, y);
         this.context2d.arc(x, y, radius, startRadian, endRadian);
         this.context2d.closePath();
         this.context2d.fill();
@@ -69,6 +70,7 @@ class Canvas2DUtility{
             this.context2d.strokeStyle = color;
         }
         this.context2d.lineWidth = width;
+        this.context2d.beginPath();
         this.context2d.moveTo(x1, y1);
         this.context2d.quadraticCurveTo(cx, cy, x2, y2);
         this.context2d.closePath();
@@ -86,6 +88,7 @@ class Canvas2DUtility{
         this.context2d.closePath();
         this.context2d.stroke();
     }
+
     drawText(text, x, y, color, width){
         // 色が指定されている場合はスタイルを設定する
         if(color != null){
@@ -93,6 +96,7 @@ class Canvas2DUtility{
         }
         this.context2d.fillText(text, x, y, width);
     }
+
     imageLoader(path, callback){
         // 画像のインスタンスを生成する
         let target = new Image();
