@@ -3,29 +3,12 @@
  * 座標を管理するためのクラス
  */
 class Position {
-    /**
-     * @constructor
-     * @param {number} x - X 座標
-     * @param {number} y - Y 座標
-     */
+   
     constructor(x, y){
-        /**
-         * X 座標
-         * @type {number}
-         */
         this.x = x;
-        /**
-         * Y 座標
-         * @type {number}
-         */
         this.y = y;
     }
 
-    /**
-     * 値を設定する
-     * @param {number} [x] - 設定する X 座標
-     * @param {number} [y] - 設定する Y 座標
-     */
     set(x, y){
         if(x != null){this.x = x;}
         if(y != null){this.y = y;}
@@ -36,41 +19,19 @@ class Position {
  * キャラクター管理のための基幹クラス
  */
 class Character {
-    /**
-     * @constructor
-     * @param {CanvasRenderingContext2D} ctx - 描画などに利用する 2D コンテキスト
-     * @param {number} x - X 座標
-     * @param {number} y - Y 座標
-     * @param {number} w - 幅
-     * @param {number} h - 高さ
-     * @param {number} life - キャラクターのライフ（生存フラグを兼ねる）
-     * @param {Image} image - キャラクターの画像
-     */
-    constructor(ctx, x, y, w, h, life, image){
-        /**
-         * @type {CanvasRenderingContext2D}
-         */
+    constructor(ctx, x, y, w, h, life, imagePath){
         this.ctx = ctx;
-        /**
-         * @type {Position}
-         */
         this.position = new Position(x, y);
-        /**
-         * @type {number}
-         */
         this.width = w;
-        /**
-         * @type {number}
-         */
         this.height = h;
-        /**
-         * @type {number}
-         */
         this.life = life;
-        /**
-         * @type {Image}
-         */
-        this.image = image;
+        this.ready = false;
+        this.image = new Image();
+        this.image.addEventListener('load', () => {
+            // 画像のロード終了時のフラグ立て
+            this.ready = true;
+        }, false);
+        this.image.src = imagePath;
     }
 
     /**
@@ -95,52 +56,19 @@ class Character {
  * viper クラス
  */
 class Viper extends Character {
-    /**
-     * @constructor
-     * @param {CanvasRenderingContext2D} ctx - 描画などに利用する 2D コンテキスト
-     * @param {number} x - X 座標
-     * @param {number} y - Y 座標
-     * @param {number} w - 幅
-     * @param {number} h - 高さ
-     * @param {Image} image - キャラクターの画像
-     */
     constructor(ctx, x, y, w, h, image){
-        // 継承元の初期化
         super(ctx, x, y, w, h, 0, image);
-
-        /**
-         * 自身の移動スピード（update 一回あたりの移動量）
-         * @type {number}
-         */
         this.speed = 3;
-        /**
-         * viper が登場中かどうかを表すフラグ
-         * @type {boolean}
-         */
         this.isComing = false;
-        /**
-         * 登場演出を開始した際のタイムスタンプ
-         * @type {number}
-         */
         this.comingStart = null;
-        /**
-         * 登場演出を開始する座標
-         * @type {Position}
-         */
         this.comingStartPosition = null;
-        /**
-         * 登場演出を完了とする座標
-         * @type {Position}
-         */
         this.comingEndPosition = null;
+        // ショットインスタンスの配列
+        this.shotArray = null;
     }
 
     /**
      * 登場演出に関する設定を行う
-     * @param {number} startX - 登場開始時の X 座標
-     * @param {number} startY - 登場開始時の Y 座標
-     * @param {number} endX - 登場終了とする X 座標
-     * @param {number} endY - 登場終了とする Y 座標
      */
     setComing(startX, startY, endX, endY){
         // 登場中のフラグを立てる
@@ -153,6 +81,13 @@ class Viper extends Character {
         this.comingStartPosition = new Position(startX, startY);
         // 登場終了とする座標を設定する
         this.comingEndPosition = new Position(endX, endY);
+    }
+
+    /**
+     * 　ショットを設定する
+     */
+    setShotArray(shotArray){
+        this.shotArray = shotArray;
     }
 
     /**
@@ -200,6 +135,16 @@ class Viper extends Character {
             let tx = Math.min(Math.max(this.position.x, 0), canvasWidth);
             let ty = Math.min(Math.max(this.position.y, 0), canvasHeight);
             this.position.set(tx, ty);
+
+            // ショットの生成
+            if(window.isKeyDown.key_z === ture) {
+                for(let i = 0 ; i < this.shotArray.lenth ; ++i){
+                    if(this.shotArray[i].life <= 0){
+                        this.shotArray[i].set(this.position.x, this.position.y);
+                        break;
+                    }
+                }
+            }
         }
 
         // 自機キャラクターを描画する
