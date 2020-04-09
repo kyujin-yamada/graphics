@@ -210,3 +210,28 @@ class Viper extends Character {
     }
 }
 
+/**
+ * Shot クラス
+ */
+class Shot extends Charactor {
+    constructor(ctx, x, y, w, h, imagePath){
+        super(ctx, x, y, w, h, 0, imagePath);
+
+        // 自身の移動スピード
+        this.speed = 7;
+    }
+    // shotを配置する
+    set(x, y){
+        this.position.set(x, y);
+        this.life = 1;
+    }
+    update(){
+        if(this.life <= 0){return ;}
+        if(this.position.y + this.height < 0){
+            this.life = 0;
+        }
+        //　上に向かって発車
+        this.position.y -= this.speed;
+        this.draw()
+    }
+}
