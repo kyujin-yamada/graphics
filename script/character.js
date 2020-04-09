@@ -59,6 +59,11 @@ class Viper extends Character {
     constructor(ctx, x, y, w, h, imagePath){
         super(ctx, x, y, w, h, 0, imagePath);
         this.speed = 3;
+        
+        //ショットのプロパティ
+        this.shotCheckCounter = 0;
+        this.shotInterval = 10;
+
         // 登場中フラグ
         this.isComing = false;
         this.comingStart = null;
@@ -141,14 +146,19 @@ class Viper extends Character {
             // ショットの生成
             if(window.isKeyDown.key_z === true) {
                 for(let i = 0 ; i < this.shotArray.length ; ++i){
-                    if(this.shotArray[i].life <= 0){
-                        this.shotArray[i].set(this.position.x, this.position.y);
-                        break;
+                    // ショットチェック用カウンタが 0 以上ならショットを生成できる
+                    if(this.shotCheckCounter >= 0){
+                        if(this.shotArray[i].life <= 0){
+                            this.shotArray[i].set(this.position.x, this.position.y);
+                            // インターバル
+                            this.shotCheckCounter = -this.shotInterval;
+                            break;
+                       }
                     }
                 }
             }
+             ++this.shotCheckCounter;    
         }
-
         // 自機キャラクターを描画する
         this.draw();
 
