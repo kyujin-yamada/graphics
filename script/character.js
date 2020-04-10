@@ -72,6 +72,7 @@ class Viper extends Character {
 
         // ショットインスタンスの配列
         this.shotArray = null;
+        this.singleShotArray = null;
     }
 
     /**
@@ -93,8 +94,9 @@ class Viper extends Character {
     /**
      * 　ショットを設定する
      */
-    setShotArray(shotArray){
+    setShotArray(shotArray, singleShotArray){
         this.shotArray = shotArray;
+        this.singleShotArray = singleShotArray;
     }
 
     /**
@@ -145,20 +147,35 @@ class Viper extends Character {
 
             // ショットの生成
             if(window.isKeyDown.key_z === true) {
-                for(let i = 0 ; i < this.shotArray.length ; ++i){
-                    // ショットチェック用カウンタが 0 以上ならショットを生成できる
-                    if(this.shotCheckCounter >= 0){
+                // ショットチェック用カウンターが 0 以上ならショットを生成できる
+                if(this.shotCheckCounter >= 0){
+                    let i;
+                    for(i = 0 ; i < this.shotArray.length ; ++i){
+                        // ショットチェック用カウンタが 0 以上ならショットを生成できる
                         if(this.shotArray[i].life <= 0){
-                            this.shotArray[i].set(this.position.x, this.position.y);
+                             this.shotArray[i].set(this.position.x, this.position.y);
                             // インターバル
                             this.shotCheckCounter = -this.shotInterval;
                             break;
-                       }
+                        }
+                    }
+                    // シングルショット　二個をワンセットで生成し左右に振り分ける
+                    for(i = 0 ; i < this.shotArray.shotArray.length ; i+= 1){
+                        if(this.singleShotArray[i].life <= 0 && this.singleShotArray[i+1].life <= 0){
+                            this.singleShotArray[i].set(this.position.x, this.position.y);
+                            this.singleShotArray[i].setVector(0.2, -0.9);
+                            this.singleShotArray[i+1].set(this.position.x, this.position.y);
+                            this.singleShotArray[i+1].setVector(-0.2, -0.9);
+                            // ショットを生成したのでインターバルを設定する
+                            this.shotCheckCounter = -this.shotInterval;
+                            break;
+                        }
                     }
                 }
             }
-             ++this.shotCheckCounter;    
-        }
+            ++this.shotCheckCounter;
+       }
+       
         // 自機キャラクターを描画する
         this.draw();
 

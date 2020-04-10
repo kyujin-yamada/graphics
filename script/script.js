@@ -11,6 +11,7 @@
     let startTime = null;
     let viper = null;
     let shotArray = [];
+    let singleShotArray = [];
 
     /**
      * do event load when loding page complete
@@ -47,9 +48,11 @@
         // ショットを初期化する
         for(let i=0 ; i < SHOT_MAX_COUNT ; ++i){
             shotArray[i] = new Shot(ctx, 0, 0, 32, 32, './image/viper_shot.png');
+            singleShotArray[i*2] = new Shot(ctx, 0, 0, 32, 32, './image/viper_single_shot.png');
+            singleShotArray[i*2+1] = new Shot(ctx, 0, 0, 32, 32, './image/viper_single_shot.png');
         }
 
-        viper.setShotArray(shotArray);
+        viper.setShotArray(shotArray, singleShotArray);
     }
 
     /**
@@ -58,7 +61,14 @@
     function loadCheck(){
         let ready = true;
         ready = ready && viper.ready;
+        
+        // shotの準備状況 
         shotArray.map((v) => {
+            ready = ready && v.ready;
+        });
+
+        // シングルショットの準備状況の確認
+        singleShotArray.map((v) =>{
             ready = ready && v.ready;
         });
 
@@ -97,9 +107,16 @@
         // 経過時間の取得
         let nowTime = (Date.now() - startTime) / 1000;
 
+        // 自機キャラクターの状態を更新
         viper.update();
 
+        // ショットの状態を更新
         shotArray.map((v) => {
+            v.update();
+        });
+
+        // シングルショットの状態を更新する
+        singleShotArray.map((v) => {
             v.update();
         });
 
