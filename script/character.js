@@ -160,7 +160,7 @@ class Viper extends Character {
                         }
                     }
                     // シングルショット　二個をワンセットで生成し左右に振り分ける
-                    for(i = 0 ; i < this.shotArray.shotArray.length ; i+= 1){
+                    for(i = 0 ; i < this.singleShotArray.length ; i+= 2){
                         if(this.singleShotArray[i].life <= 0 && this.singleShotArray[i+1].life <= 0){
                             this.singleShotArray[i].set(this.position.x, this.position.y);
                             this.singleShotArray[i].setVector(0.2, -0.9);
@@ -184,7 +184,7 @@ class Viper extends Character {
     }
 }
 
-/**
+/*
  * Shot クラス
  */
 class Shot extends Character {
@@ -213,8 +213,6 @@ class Shot extends Character {
         if(this.position.y + this.height < 0){
             this.life = 0;
         }
-        //　上に向かって発車
-        this.position.y -= this.speed;
 
         // shotの移動
         this.position.x += this.vector.x * this.speed;
