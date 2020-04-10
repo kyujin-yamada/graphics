@@ -176,12 +176,21 @@ class Shot extends Character {
 
         // 自身の移動スピード
         this.speed = 7;
+        
+        // shotの進行方向
+        this.vector = new Position(0.0, -1.0);
     }
     // shotを配置する
     set(x, y){
         this.position.set(x, y);
         this.life = 1;
     }
+
+    // ショットの進行方向を設定する
+    setVector(x, y){
+        this.vector.set(x, y);
+    }
+
     update(){
         if(this.life <= 0){return ;}
         if(this.position.y + this.height < 0){
@@ -189,6 +198,12 @@ class Shot extends Character {
         }
         //　上に向かって発車
         this.position.y -= this.speed;
+
+        // shotの移動
+        this.position.x += this.vector.x * this.speed;
+        this.position.y += this.vector.y * this.speed;
+
+        // 描画
         this.draw();
     }
 }
