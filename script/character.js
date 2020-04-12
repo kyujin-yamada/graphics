@@ -26,12 +26,23 @@ class Character {
         this.height = h;
         this.life = life;
         this.ready = false;
+        this.angle = 270 * Math.PI / 180;
         this.image = new Image();
         this.image.addEventListener('load', () => {
             // 画像のロード終了時のフラグ立て
             this.ready = true;
         }, false);
         this.image.src = imagePath;
+    }
+
+    /**
+     * 進行方向を角度をもとに設定する
+     */
+    setVectorFromAngle(angle){
+        this.angle = angle;
+        let sin = Math.sin(angle);
+        let cos = Math.cos(angle);
+        this.vector.set(cos, sin);
     }
 
     /**
@@ -50,6 +61,32 @@ class Character {
             this.height
         );
     }
+    /**
+     * 自身の回転量をもとに座標系を回転させる
+     */
+    rotationDraw(){
+        // 回転前の状態の保持
+        this.ctx.save();
+        // 自身の位置が座標系の中心と重なるように平行移動する。
+        this.ctx.translate(this.position.x, this.position.y);
+        // 座標の回転
+        this.ctx.rotate(this.angle - Math.PI * 1.5);
+
+        // キャラクターの幅を考慮してオフセットsるう
+        let offsetX = this.width / 2;
+        let offsetY = this.height / 2;
+
+        this.ctx.drawImage(
+            this.image,
+            -offsetX,
+            -offsetY,
+            this.width,
+            this.height
+        );
+        // 回転前の状態に戻す
+        this.ctx.restore();
+    }
+
 }
 
 /**
@@ -162,10 +199,15 @@ class Viper extends Character {
                     // シングルショット　二個をワンセットで生成し左右に振り分ける
                     for(i = 0 ; i < this.singleShotArray.length ; i+= 2){
                         if(this.singleShotArray[i].life <= 0 && this.singleShotArray[i+1].life <= 0){
+                            // まうえの方向から左右に傾いたラジアン
+                            let radCW = 280 * Math.PI / 180;
+                            let radCCW = 260 * Math.PI / 180;
+
+                            // 自機キャラクターの座標にショットを生成
                             this.singleShotArray[i].set(this.position.x, this.position.y);
-                            this.singleShotArray[i].setVector(0.2, -0.9);
+                            this.singleShotArray[i].setVectorFromAngle(radCW);
                             this.singleShotArray[i+1].set(this.position.x, this.position.y);
-                            this.singleShotArray[i+1].setVector(-0.2, -0.9);
+                            this.singleShotArray[i+1].setVectorFromAngle(radCCW);
                             // ショットを生成したのでインターバルを設定する
                             this.shotCheckCounter = -this.shotInterval;
                             break;
