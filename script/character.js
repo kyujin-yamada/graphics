@@ -22,6 +22,7 @@ class Character {
     constructor(ctx, x, y, w, h, life, imagePath){
         this.ctx = ctx;
         this.position = new Position(x, y);
+        this.vector = new Position(0.0, -1.0)
         this.width = w;
         this.height = h;
         this.life = life;
@@ -34,8 +35,15 @@ class Character {
         }, false);
         this.image.src = imagePath;
     }
-
     /**
+     * 進行方向の設定
+     * @param {number} angle 
+     */
+    setVector(x, y){
+        this.vector.set(x, y);
+    }
+    
+    /*
      * 進行方向を角度をもとに設定する
      */
     setVectorFromAngle(angle){
@@ -261,6 +269,6 @@ class Shot extends Character {
         this.position.y += this.vector.y * this.speed;
 
         // 描画
-        this.draw();
+        this.rotationDraw();
     }
 }
