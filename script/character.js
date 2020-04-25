@@ -233,6 +233,42 @@ class Viper extends Character {
         this.ctx.globalAlpha = 1.0;
     }
 }
+ /*
+ 　* 敵キャラクラス
+*/
+class Enemy extends Character {
+    constructor(ctx, x, y, w, h, imagePath){
+        // 継承元の初期化
+        super(ctx, x, y, w, h, 0, imagePath);
+
+        this.speed = 3;
+    }
+    /**
+     * 敵の配置
+     */
+    set(x, y, life = 1){
+        // 開始位置に敵移動
+        this.position.set(x, y);
+        this.life = life;
+    }
+
+    /**
+     * キャラクターの状態を更新し描画を行う
+     */
+    update(){
+        if(this.life<=0){return;}
+        // 画面外はライフ0
+        if(this.position.y - this.height > this.ctx.canvas.height){
+            this.life = 0;
+        }
+        // 進行方向へ移動
+        this.position.x += this.vector.x * this.speed;
+        this.position.y += this.vector.y * this.speed;
+
+        // 描画
+        this.draw();
+    }
+}
 
 /*
  * Shot クラス
