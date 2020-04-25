@@ -241,15 +241,35 @@ class Enemy extends Character {
         // 継承元の初期化
         super(ctx, x, y, w, h, 0, imagePath);
 
+        // 自身のタイプ
+        this.type = 'default';
+        
+        // 出現後のフレーム数
+        this.frame = 0;
+
+        // 自身のスピード
         this.speed = 3;
+
+        // ショットインスタンスの配列
+        this.shotArray = null;
     }
     /**
      * 敵の配置
      */
-    set(x, y, life = 1){
+    set(x, y, life = 1, type = 'default'){
         // 開始位置に敵移動
         this.position.set(x, y);
         this.life = life;
+        // 敵キャラクターのタイプ設定
+        this.type = type;
+        // フレームのリセット
+        this.frame = 0;
+    }
+    /**
+     * set shot
+     */
+    setShotArray(shotArray){
+        this.shotArray = shotArray;
     }
 
     /**
@@ -258,15 +278,44 @@ class Enemy extends Character {
     update(){
         if(this.life<=0){return;}
         // 画面外はライフ0
-        if(this.position.y - this.height > this.ctx.canvas.height){
-            this.life = 0;
-        }
-        // 進行方向へ移動
-        this.position.x += this.vector.x * this.speed;
-        this.position.y += this.vector.y * this.speed;
 
+        // タイプに応じた挙動
+        switch(this.type){
+            case 'default':
+            default:
+                // 配置後のフレームが50の時にショットを放つ
+                if(this.frame === 50){
+                    this.fire();
+                }
+                // 敵キャラの進行方向に沿って移動
+                this.position.x += this.vector.x * this.speed;
+                this.position.y += this.vector.y * this.speed;
+                // 画面外へ移動したらライフ0
+                if(this.position.y - this.height > this.ctx.canvas.height){
+                    this.life = 0;
+                }
+                break;
+            }
         // 描画
         this.draw();
+        ++this.frame;
+    }
+    /**
+     * 自身から指定された方向にショットを放つ
+     * @param {}} x 
+     * @param {*} y 
+     */
+    fire(x = 0.0, y = 1.0){
+        for(let i = 0 ; i < this.shotArray.length ; ++i){
+            if(this.shotArray[i].life <= 0){
+                this.shotArray[i].set(this.position.x, this.position.y);
+                // speed
+                this.shotArray[i].setSpeed(5.0);
+                // vectol
+                this.shotArray[i].setVector(x, y);
+                break;
+            }
+        }
     }
 }
 
@@ -289,6 +338,11 @@ class Shot extends Character {
         this.life = 1;
     }
 
+    setSpeed(speed){
+        if(speed != null && speed > 0){
+            this.speed = speed;
+        }
+    }
     // ショットの進行方向を設定する
     setVector(x, y){
         this.vector.set(x, y);
