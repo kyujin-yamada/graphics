@@ -4,7 +4,7 @@
     const CANVAS_WIDTH = 640;
     const CANVAS_HEIGHT = 480;
     const SHOT_MAX_COUNT = 10;
-    const ENEMY_MAX_COUNT = 
+    const ENEMY_MAX_COUNT = 10;
 
     let util = null;
     let canvas = null;
@@ -52,16 +52,19 @@
             CANVAS_HEIGHT - 100
         );
 
+         // 敵キャラクターを初期化する
+         for(i = 0 ;i < ENEMY_MAX_COUNT ; ++i){
+          enemyArray[i] = new Enemy(ctx, 0, 0, 48, 48, './image/enemy_small.png');
+          enemyArray[i] = new Enemy(ctx, 0, 0, 48, 48, './image/enemy_small.png');
+
+        }
+       
+
         // ショットを初期化する
         for(let i=0 ; i < SHOT_MAX_COUNT ; ++i){
             shotArray[i] = new Shot(ctx, 0, 0, 32, 32, './image/viper_shot.png');
             singleShotArray[i*2] = new Shot(ctx, 0, 0, 32, 32, './image/viper_single_shot.png');
             singleShotArray[i*2+1] = new Shot(ctx, 0, 0, 32, 32, './image/viper_single_shot.png');
-        }
-
-        // 敵キャラクターを初期化する
-        for(i = 0 ;i < ENEMY_MAX_COUNT ; i++){
-            enemyArray[i] = new Enemy(ctx, 0, 0, 48, 48, '/image/enemy_small.png');
         }
         viper.setShotArray(shotArray, singleShotArray);
     }
@@ -73,6 +76,11 @@
         let ready = true;
         ready = ready && viper.ready;
         
+        // 同様に敵キャラクターの準備状況も確認する
+        enemyArray.map((v) => {
+            ready = ready && v.ready;
+        });
+
         // shotの準備状況 
         shotArray.map((v) => {
             ready = ready && v.ready;
@@ -83,14 +91,11 @@
             ready = ready && v.ready;
         });
 
-        // 同様に敵キャラクターの準備状況も確認する
-        enemyArray.map((v) => {
-            ready = ready && v.ready;
-        });
 
         // 全ての準備が完了したら進む
         if(ready === true){
             eventSetting();
+            sceneSetting();
             startTime = Date.now();
             render();
         }else{
@@ -140,7 +145,8 @@
                 }
             }
         });
-        scene.use('invade');
+        // 一番最初のシーンには　intro を設定する
+        scene.use('intro');
     }
     /**
      *  一番最初のシーンには intro を設定する
@@ -158,7 +164,7 @@
 
         // 自機キャラクターの状態を更新
         viper.update();
-
+        
         // 敵キャラの状態の更新
         enemyArray.map((v) => {
             v.update();
@@ -173,14 +179,13 @@
         singleShotArray.map((v) => {
             v.update();
         });
-
-        enemyArray.map((v) => {
-            v.update();
-        });
         
         requestAnimationFrame(render);
     }
-    /* 特定のは二のランダム */
+    /**
+     * 特定の範囲におけるランダムな整数の値を生成する
+     * @param {number} range 
+     */
     function generateRandomInt(range) {
         let random = Math.random();
         return Math.floor(random * range);
